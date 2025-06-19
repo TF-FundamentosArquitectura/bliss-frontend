@@ -17,6 +17,7 @@ export class ClientAppointmentApiService {
      */
 
     createAppointment(appointment) {
+        console.log("POST /appointments payload:", appointment); // <-- Agregado para depuración
         return http.post('/appointments', appointment);
     }
 
