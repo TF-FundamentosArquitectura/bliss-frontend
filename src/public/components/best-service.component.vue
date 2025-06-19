@@ -18,7 +18,7 @@ export default {
       const reviewApiService = new ReviewApiService();
       try {
         const servicesResponse = await serviceApiService.getServices();
-        const reviewsResponse = await reviewApiService.getReview();
+        const reviewsResponse = await reviewApiService.getReviews();
 
         this.services = servicesResponse.data;
         this.reviews = reviewsResponse.data;
