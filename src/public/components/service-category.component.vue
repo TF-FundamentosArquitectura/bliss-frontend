@@ -19,14 +19,13 @@ export default {
         const categoriesResponse = await categoryApiService.getCategories();
         this.categories = categoriesResponse.data;
 
+
         const servicesResponse = await serviceApiService.getServices();
         const allServices = servicesResponse.data;
 
         for (const category of this.categories) {
           const servicesForCategory = allServices.filter(
-            (service) =>
-              service.category &&
-              service.category.id === category.id
+              (service) =>   service.category.id === category.id
           );
           this.servicesByCategory[category.id] = servicesForCategory;
         }
@@ -66,7 +65,7 @@ export default {
             <template #content>
               <div class="content-text">
                 <p>{{ service.description }}</p>
-                <p class="p-mt-2">{{ $t('servicesHome.price') }}: S/ {{ service.price }}</p>
+                <p class="p-mt-2">{{ $t('servicesHome.price') }}: ${{ service.price }}</p>
                 <p class="p-mt-2">{{ $t('servicesHome.duration') }}: {{ service.duration }} min</p>
               </div>
             </template>
