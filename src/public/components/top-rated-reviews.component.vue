@@ -82,7 +82,6 @@ export default {
               <div class="appointment-info">
                 <div v-if="review.serviceName"><b>Servicio:</b> {{ review.serviceName }}</div>
                 <div v-if="review.companyName"><b>Empresa:</b> {{ review.companyName }}</div>
-                <div v-if="review.reservationStartTime"><b>Hora:</b> {{ review.reservationStartTime }}</div>
               </div>
               <div class="stars">{{ getStars(review.rating) }}</div>
               <p class="review-comment">
