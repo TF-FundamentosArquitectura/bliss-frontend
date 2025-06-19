@@ -40,4 +40,11 @@ export class ReviewApiService extends ServiceApiService {
     getReviewsByCompanyId(companyId) {
         return http.get(`/reviews/company/${companyId}`);
     }
+    async getReviews() {
+        // Ajusta la URL según tu backend
+        return await fetch('http://localhost:5000/api/v1/reviews')
+            .then(response => response.json())
+            .then(data => ({ data }))
+            .catch(error => { throw error; });
+    }
 }
