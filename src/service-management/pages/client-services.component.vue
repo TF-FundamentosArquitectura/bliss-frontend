@@ -11,8 +11,6 @@ import {Service} from "../../shared/model/service.entity.js";
 export default {
   name: "client-services",components: { CategoryFilter, PriceFilter, ServiceList, serviceListComponent},
   data() {
-
-
     return {
       categories: [],
       services: [],
@@ -39,18 +37,17 @@ export default {
       return service.map(
           service=> new Service(
               service.id,
-              service.category,
-              service.company,
+              service.category, // No usar category_id
+              service.company,  // No usar company_id
               service.name,
               service.description,
               service.price,
               service.duration,
               service.rating,
               service.sales,
-              service.imgUrl
+              service.imgUrl // No usar imgUrl como variable local, solo propiedad del objeto
           )
       );
-
     },
     getMinValue(values) {
       return Math.min(...values);
@@ -73,23 +70,26 @@ export default {
       this.maxValue = this.getMaxValue(prices)
     },
     async filterServices(){
-
       this.filteredServices = this.services.filter(service => {
-        let categoryMatch = this.selectedCategories.length === 0 || this.selectedCategories.some(category => category.id === service.category_id);
+        // Normaliza el id de categoría del servicio para comparación
+        let categoryId = null;
+        if (service.category && typeof service.category === 'object' && service.category.id !== undefined) {
+          categoryId = service.category.id;
+        } else if (typeof service.category === 'string' || typeof service.category === 'number') {
+          categoryId = service.category;
+        }
+        categoryId = categoryId != null ? String(categoryId) : null;
+        const selectedCategoriesStr = this.selectedCategories.map(id => String(id));
+        let categoryMatch = this.selectedCategories.length === 0 || selectedCategoriesStr.includes(categoryId);
         let priceMatch = this.selectedRange.length === 0 || (service.price >= this.selectedRange[0] && service.price <= this.selectedRange[1]);
         return categoryMatch && priceMatch;
       });
-
     }
-
-
   },
   created() {
     this.getCategories();
     this.getServices();
-
   }
-
 }
 </script>
 
