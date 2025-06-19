@@ -12,28 +12,37 @@ export default {
     return {
       date: new Date(),
       time: new Date(),
-      requirements: null
+      requirements: ""
     }
   },
   methods:{
     buildAppointmentFromFormData(){
-      let nowDate = new Date();
-      nowDate = nowDate.toISOString();
-      let bookingDate = this.date.toISOString();
-      let bookingTime = `${this.time.getHours().toString().padStart(2, '0')}:${this.time.getMinutes().toString().padStart(2, '0')}`;
+      const bookingDate = new Date(
+          this.date.getFullYear(),
+          this.date.getMonth(),
+          this.date.getDate(),
+          this.time.getHours(),
+          this.time.getMinutes(),
+          0, 0
+      );
+      // Formatear la hora como string (HH:mm)
+      const pad = n => n.toString().padStart(2, '0');
+      const timeString = `${pad(this.time.getHours())}:${pad(this.time.getMinutes())}`;
+
       return {
         userId: defaultClientId,
         serviceId: this.service.id,
         companyId: this.service.company.id,
-        reservationDate: nowDate,
-        status: "PENDING",
-        date: bookingDate,
-        time: bookingTime,
-        requirements: this.requirements
+        reservationDate: bookingDate.toISOString(),
+        date: bookingDate.toISOString(),
+        time: timeString,
+        requirements: this.requirements ? this.requirements : "",
+        status: "PENDING"
       };
     },
     emitBookingEvent(){
       let appointmentData = this.buildAppointmentFromFormData();
+      console.log("Appointment to send:", appointmentData); // <-- Agregado para depuración
       this.$emit('booking-event', appointmentData);
     },
     confirmBooking(){
