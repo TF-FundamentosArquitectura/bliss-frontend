@@ -1,20 +1,35 @@
 <script>
 import CompanyDetailProfile from "../components/company-detail-profile.component.vue";
-import {defaultBusinessId} from "../../router/index.js";
+import { CompanyDetailApiService } from "../services/company-detail-api.service.js";
 
 export default {
   name: "company-detail-page",
-  components: {CompanyDetailProfile},
-  data(){
+  components: { CompanyDetailProfile },
+  data() {
     return {
-      companyId: defaultBusinessId
+      companies: []
+    };
+  },
+  async created() {
+    const api = new CompanyDetailApiService();
+    try {
+      const response = await api.getCompanies();
+      this.companies = response.data;
+    } catch (e) {
+      this.companies = [];
     }
   }
-}
+};
 </script>
 
 <template>
-<company-detail-profile :companyId="companyId"/>
+  <div>
+    <company-detail-profile
+      v-for="company in companies"
+      :key="company.id"
+      :companyId="company.id"
+    />
+  </div>
 </template>
 
 <style scoped>
