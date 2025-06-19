@@ -42,9 +42,19 @@ export default {
       this.bookingService = this.buildServiceFromResponseData(response.data);
     },
     async handleBookingEvent(appointment) {
-      let response = await this.clientAppointmentApiService.createAppointment(appointment);
-      if (response.status === 201) {
-        this.afterBookingDialog();
+      try {
+        let response = await this.clientAppointmentApiService.createAppointment(appointment);
+        if (response.status === 201) {
+          this.afterBookingDialog();
+        } else {
+          this.$toast.add({severity:'error', summary:'Error', detail:'No se pudo crear la cita.', life: 3000});
+        }
+      } catch (error) {
+        let msg = "No se pudo crear la cita.";
+        if (error.response && error.response.data && error.response.data.message) {
+          msg = error.response.data.message;
+        }
+        this.$toast.add({severity:'error', summary:'Error', detail: msg, life: 4000});
       }
     },
     redirectToServices(){
@@ -90,7 +100,7 @@ export default {
     </div>
     <div class="flex-none flex align-items-center justify-content-center">
       <appointment-form :service="bookingService"
-       @booking-event="handleBookingEvent"/>
+                        @booking-event="handleBookingEvent"/>
     </div>
     <div class="flex-1 flex align-items-start justify-content-center">
       <div>
@@ -104,7 +114,7 @@ export default {
           </template>
           <template #footer>
             <pv-button label="Go Back" icon="pi pi-chevron-right" icon-pos="left"
-             severity="danger" @click="redirectToServices()" />
+                       severity="danger" @click="redirectToServices()" />
           </template>
         </pv-card >
       </div>
