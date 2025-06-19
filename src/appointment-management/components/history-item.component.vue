@@ -45,7 +45,6 @@ const checkReviewExists = async () => {
   }
 };
 
-
 onMounted(() => {
   fetchServiceDetails();
   checkReviewExists();
@@ -67,27 +66,76 @@ const deleteReview = async (reviewId) => {
 watch(() => props.review, (newReview) => {
   hasReview.value = !!newReview;
 });
+
+// Helpers for formatting
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  if (isNaN(date)) return '';
+  return date.toLocaleDateString();
+}
+function formatTime(timeStr) {
+  if (!timeStr) return '';
+  // If time is in format "HH:mm", just return it
+  if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
+  // If time is in ISO format, extract time
+  const date = new Date(timeStr);
+  if (isNaN(date)) return '';
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
 </script>
 
 <template>
-  <div class="history-card">
-    <img v-if="serviceImage" :src="serviceImage" alt="Service Image" class="service-image"/>
+  <div class="history-card" :class="appointment.status.toLowerCase()">
+    <div class="card-header">
+      <img v-if="serviceImage" :src="serviceImage" alt="Service Image" class="service-image"/>
+      <div class="service-info">
+        <h3 class="service-name">{{ appointment.service.serviceName }}</h3>
+        <p class="company-name">
+          <span class="icon"><i class="fa fa-building"></i></span>
+          {{ appointment.company.name }}
+        </p>
+      </div>
+    </div>
     <div class="history-content">
-      <h3 class="service-name">{{ appointment.service.serviceName }}</h3>
-      <p class="company-name">{{ appointment.company.name }}</p>
-      <p class="appointment-date" v-if="appointment.date">{{ appointment.date }}</p>
-      <p class="appointment-date" v-else>{{ $t('historyCard.noSchedule') }}</p>
+      <div class="info-row">
+        <span class="icon"><i class="fa fa-calendar"></i></span>
+        <span class="label">Fecha:</span>
+        <span>{{ formatDate(appointment.date) }}</span>
+      </div>
+      <div class="info-row">
+        <span class="icon"><i class="fa fa-info-circle"></i></span>
+        <span class="label">Estado:</span>
+        <span>
+          <span class="status-badge" :class="appointment.status.toLowerCase()">
+            {{ appointment.status }}
+          </span>
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="icon"><i class="fa fa-list"></i></span>
+        <span class="label">Requerimientos:</span>
+        <span>
+          {{
+            !appointment.requirements ||
+            appointment.requirements.trim() === '' ||
+            appointment.requirements.trim().toLowerCase() === 'string'
+              ? 'Sin requerimientos'
+              : appointment.requirements
+          }}
+        </span>
+      </div>
     </div>
     <div class="card-actions">
       <button class="add-button" v-if="!hasReview" @click="goToReviewPage(appointment.id)">
-        {{ $t('historyCard.addReview') }}
+        <i class="fa fa-star"></i> Agregar reseña
       </button>
       <div class="actions-buttons" v-if="hasReview">
         <button class="edit-button" @click="goToReviewPage(appointment.id)">
-          {{ $t('historyCard.editReview') }}
+          <i class="fa fa-edit"></i> Editar reseña
         </button>
         <button class="delete-button" @click="deleteReview(review.id)">
-          {{ $t('historyCard.deleteReview') }}
+          <i class="fa fa-trash"></i> Eliminar reseña
         </button>
       </div>
     </div>
@@ -95,95 +143,162 @@ watch(() => props.review, (newReview) => {
 </template>
 
 <style scoped>
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
 .history-card {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 400px;
+  padding: 22px 24px 18px 0;
+  border-radius: 16px;
+  margin: 0 auto 24px;
+  background: #fff;
+  box-shadow: 0 4px 18px 0 rgba(55,18,60,0.08);
+  border-left: 6px solid #6b5b95;
+  transition: box-shadow 0.2s, transform 0.2s;
+  position: relative;
+}
+.history-card.completed {
+  border-left: 6px solid #43aa8b;
+}
+.history-card:hover {
+  box-shadow: 0 8px 28px 0 rgba(55,18,60,0.15);
+  transform: translateY(-2px) scale(1.01);
+}
+
+.card-header {
+  display: flex;
   align-items: center;
-  width: 100%;
-  max-width: 350px;
-  padding: 20px;
-  border: 1px solid #ececec;
-  border-radius: 12px;
-  margin: 0 auto 20px;
-  background-color: #f9f7fc;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
 }
-
 .service-image {
-  width: 100%;
-  height: 180px;
+  width: 70px;
+  height: 70px;
   object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 16px;
+  border-radius: 12px;
+  margin-right: 18px;
+  border: 2px solid #ececec;
+  background: #f7f7fa;
 }
-
-.history-content {
-  text-align: center;
-  margin-bottom: 16px;
+.service-info {
+  flex: 1;
 }
-
 .service-name {
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   color: #37123C;
-  font-weight: bold;
-  margin-bottom: 8px;
+  font-weight: 700;
+  margin-bottom: 2px;
+  letter-spacing: 0.01em;
 }
-
 .company-name {
   color: #6b5b95;
-  font-size: 1.1rem;
-  margin-bottom: 6px;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-
-.appointment-date {
-  color: #a5a5a5;
-  font-size: 1.1rem;
-  margin-bottom: 8px;
+.icon {
+  color: #b2a4d4;
+  margin-right: 5px;
+  font-size: 1.1em;
+  display: inline-flex;
+  align-items: center;
+}
+.history-content {
+  margin-bottom: 14px;
+  padding-left: 10px;
+}
+.info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 7px;
+  font-size: 1.04rem;
+  color: #444;
+  gap: 7px;
+}
+.label {
+  font-weight: 500;
+  color: #6b5b95;
+  margin-right: 2px;
+}
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.98em;
+  font-weight: 600;
+  background: #e6f4ea;
+  color: #43aa8b;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+}
+.status-badge.completed {
+  background: #e6f4ea;
+  color: #43aa8b;
+}
+.status-badge.cancelled {
+  background: #ffe6e6;
+  color: #c1121f;
+}
+.status-badge.pending {
+  background: #fffbe6;
+  color: #e09f3e;
 }
 
 .card-actions {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  margin-top: 6px;
+}
+.actions-buttons {
+  display: flex;
+  flex-direction: row;
   gap: 10px;
   width: 100%;
 }
-
-.actions-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  width: 100%;
-}
-
 button {
   width: 100%;
   padding: 10px 0;
   border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-weight: bold;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out;
+  transition: background 0.18s, color 0.18s, transform 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
 }
-
-button:hover {
-  transform: scale(1.05);
+button:active {
+  transform: scale(0.98);
 }
-
 .add-button {
-  background-color: #a1cfff;
+  background: linear-gradient(90deg, #a1cfff 60%, #b2f5ea 100%);
   color: #004080;
 }
-
+.add-button:hover {
+  background: linear-gradient(90deg, #b2f5ea 60%, #a1cfff 100%);
+}
 .edit-button {
-  background-color: #b2f5ea;
+  background: #e6f4ea;
   color: #007f5f;
 }
-
+.edit-button:hover {
+  background: #b2f5ea;
+  color: #004d40;
+}
 .delete-button {
-  background-color: #ffccd5;
+  background: #ffccd5;
   color: #800020;
+}
+.delete-button:hover {
+  background: #ffb3c1;
+  color: #a4133c;
 }
 </style>
