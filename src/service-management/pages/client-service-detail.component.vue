@@ -1,6 +1,7 @@
 <script>
 import {ServiceApiService} from "../services/service-api.service.js";
 import {Service} from "../../shared/model/service.entity.js";
+import {$t} from "@primeuix/styled";
 
 export default {
   name: "client-service-detail",
@@ -12,18 +13,19 @@ export default {
     };
   },
   methods: {
+    $t,
     buildServiceFromResponseData(service) {
       return new Service(
           service.id,
-          service.category_id,
-          service.company_id,
+          service.category, // No usar category_id
+          service.company,  // No usar company_id
           service.name,
           service.description,
           service.price,
           service.duration,
           service.rating,
           service.sales,
-          service.imgUrl
+          service.imgUrl // No usar imgUrl como variable local, solo propiedad del objeto
       )
     },
     getServiceId() {
