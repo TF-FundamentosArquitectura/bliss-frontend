@@ -1,33 +1,32 @@
 <script>
-
 export default {
   name: "category-filter",
   props: {
     categories: {
       type: Array,
-      default: []
+      default: () => []
     },
     modelValue: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   emits: ['update:modelValue'],
-  data() {
-    return {
-      selectedCategories: this.modelValue
-    };
-  },
-  watch: {
-    selectedCategories(newVal) {
-      this.$emit('update:modelValue', newVal);
+  computed: {
+    selectedCategoryIds: {
+      get() {
+        return this.modelValue;
+      },
+      set(val) {
+        // Emitimos solo los IDs seleccionados
+        this.$emit('update:modelValue', val);
+      }
     }
   }
 };
 </script>
 
 <template>
-
   <pv-card class="m-1 w-auto">
     <template #title>Categories</template>
     <template #content>
@@ -35,9 +34,13 @@ export default {
         <div class="flex flex-column gap-2 ">
           <div v-for="category in categories" :key="category.id"
                class="justify-content-start flex align-items-center">
-            <pv-checkbox v-model="selectedCategories"  name="category"
-                         :value="category"/>
-            <label :for="category.id"> {{category.name}}</label>
+            <pv-checkbox
+              v-model="selectedCategoryIds"
+              :input-id="'category-' + category.id"
+              :value="category.id"
+              name="category"
+            />
+            <label :for="'category-' + category.id"> {{category.name}}</label>
           </div>
         </div>
       </div>
