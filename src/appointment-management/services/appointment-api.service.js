@@ -19,6 +19,15 @@ export class AppointmentApiService {
         return http.get(`/companies/${companyId}/appointments`)
     }
 
+    completeappoinmentId(appointmentId) {
+        return http.post(`/appointments/${appointmentId}`).then(response => {
+            console.log(`Appointment with id ${appointmentId} completed successfully.`);
+            return response.data;
+        }).catch(error => {
+            console.error(`Error completing appointment with id ${appointmentId}:`, error);
+            throw error;
+        });
+    }
     /**
      * Cancel an appointment by appointment ID
      * @param {number} appointmentId

@@ -135,7 +135,8 @@
     "phone": "Phone",
     "address": "Address",
     "minutes": "mins",
-    "cancelAppointment": "Cancel Appointment"
+    "cancelAppointment": "Cancel Appointment",
+    "completeAppointment": "Complete Appointment"
   },
   "businessAppointmentList": {
     "noUsersAvailable": "No users available",

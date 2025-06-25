@@ -1,9 +1,9 @@
 <script>
 import AppointmentItem from './appointment-item.component.vue';
-import {BusinessAppointmentApiService} from "../services/business-appointment-api.service.js";
-import {AppointmentApiService} from "../services/appointment-api.service.js";
-import {ServiceApiService} from "../../service-management/services/service-api.service.js";
-import {defaultBusinessId} from "../../router/index.js";
+import { BusinessAppointmentApiService } from "../services/business-appointment-api.service.js";
+import { AppointmentApiService } from "../services/appointment-api.service.js";
+import { ServiceApiService } from "../../service-management/services/service-api.service.js";
+import { defaultBusinessId } from "../../router/index.js";
 import BusinessAppointmentItem from "./business-appointment-item.component.vue";
 
 export default {
@@ -26,7 +26,7 @@ export default {
       try {
         const response = await this.appointmentApiService.getAppointmentsByCompanyId(defaultBusinessId);
         this.pendingAppointments = response.data.filter(
-            appointment => appointment.status === "PENDING"
+          appointment => appointment.status === "PENDING"
         );
       } catch (error) {
         console.error("Error fetching pending appointments:", error);
@@ -40,6 +40,14 @@ export default {
         this.cancelDialogVisible = false;
       } catch (error) {
         console.error('Error canceling appointment:', error);
+      }
+    },
+    async handleCompleteAppointment(appointment) {
+      try {
+        await this.appointmentApiService.completeappoinmentId(appointment.id);
+        this.pendingAppointments = this.pendingAppointments.filter(a => a.id !== appointment.id);
+      } catch (error) {
+        console.error('Error completing appointment:', error);
       }
     },
 
@@ -75,12 +83,9 @@ export default {
     <div v-if="pendingAppointments.length === 0">
       <p>No appointments available</p>
     </div>
-    <div v-for="appointment in pendingAppointments"
-         :key="appointment.id"
-         class="appointment-item-container">
-      <business-appointment-item :appointment="appointment"
-                                 @open-cancel-dialog="openCancelDialog"
-                                 @open-appointment-dialog="openAppointmentDialog"/>
+    <div v-for="appointment in pendingAppointments" :key="appointment.id" class="appointment-item-container">
+      <business-appointment-item :appointment="appointment" @open-cancel-dialog="openCancelDialog"
+        @open-appointment-dialog="openAppointmentDialog" @complete-appointment="handleCompleteAppointment" />
     </div>
 
     <div v-if="dialogVisible" class="dialog-overlay" @click="closeAppointmentDialog">
@@ -178,14 +183,16 @@ export default {
 }
 
 .dialog-card .close-button {
-  color: #ffffff; /* Cambia este valor por el color que prefieras */
+  color: #ffffff;
+  /* Cambia este valor por el color que prefieras */
   background-color: black;
   border: none;
 }
 
 .dialog-card .close-button:hover {
   background-color: red;
-  color: #ffffff; /* Color al pasar el cursor */
+  color: #ffffff;
+  /* Color al pasar el cursor */
 }
 
 @media (min-width: 768px) {

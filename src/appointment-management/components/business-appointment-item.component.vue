@@ -1,7 +1,7 @@
 <script>
-import {Appointment} from "../model/appointment.entity.js";
-import {ServiceApiService} from "../../service-management/services/service-api.service.js";
-import {Service} from "../../shared/model/service.entity.js";
+import { Appointment } from "../model/appointment.entity.js";
+import { ServiceApiService } from "../../service-management/services/service-api.service.js";
+import { Service } from "../../shared/model/service.entity.js";
 
 export default {
   name: 'business-appointment-item',
@@ -13,7 +13,7 @@ export default {
   },
   data() {
     return {
-      service:{
+      service: {
         type: Service
       }
     };
@@ -24,6 +24,9 @@ export default {
     }
   },
   methods: {
+    completeAppointment() {
+      this.$emit('complete-appointment', this.appointment);
+    },
     openCancelDialog() {
       this.$emit('open-cancel-dialog', this.appointment);
     },
@@ -31,16 +34,16 @@ export default {
       let serviceApiService = new ServiceApiService();
       const response = await serviceApiService.getServiceById(this.appointment.service.id);
       this.service = new Service(
-          response.data.id,
-          response.data.company,
-          response.data.category,
-          response.data.name,
-          response.data.description,
-          response.data.price,
-          response.data.duration,
-          response.data.rating,
-          response.data.sales,
-          response.data.imgUrl
+        response.data.id,
+        response.data.company,
+        response.data.category,
+        response.data.name,
+        response.data.description,
+        response.data.price,
+        response.data.duration,
+        response.data.rating,
+        response.data.sales,
+        response.data.imgUrl
       );
     }
   },
@@ -64,12 +67,14 @@ export default {
         <div class="service-info">
           <h3 class="section-title">{{ $t('businessAppointment.services') }}: {{ appointment.serviceName }}</h3>
           <p><strong>{{ $t('businessAppointment.description') }}:</strong> {{ this.service.description }}</p>
-          <p><strong>{{ $t('businessAppointment.price') }}:</strong> ${{ this.service.price}}</p>
-          <p><strong>{{ $t('businessAppointment.duration') }}:</strong> {{ this.service.duration }} {{ $t('businessAppointment.minutes') }}</p>
+          <p><strong>{{ $t('businessAppointment.price') }}:</strong> ${{ this.service.price }}</p>
+          <p><strong>{{ $t('businessAppointment.duration') }}:</strong> {{ this.service.duration }} {{
+            $t('businessAppointment.minutes') }}</p>
         </div>
         <hr class="divider" />
         <div class="user-info">
-          <h3 class="section-title">{{ $t('businessAppointment.user') }}: {{ appointment.user.firstName }} {{appointment.user.lastName}}</h3>
+          <h3 class="section-title">{{ $t('businessAppointment.user') }}: {{ appointment.user.firstName }}
+            {{ appointment.user.lastName }}</h3>
           <!--
           <p><strong>{{ $t('businessAppointment.email') }}:</strong> {{ appointment.userEmail }}</p>
           <p><strong>{{ $t('businessAppointment.phone') }}:</strong> {{ appointment.userPhone }}</p>
@@ -79,12 +84,34 @@ export default {
       </div>
     </div>
     <div class="button-container">
-      <button @click.stop="openCancelDialog" class="cancel-button">{{ $t('businessAppointment.cancelAppointment') }}</button>
+      <button @click.stop="completeAppointment" class="complete-button">
+        {{ $t('businessAppointment.completeAppointment') }}
+      </button>
+      <button @click.stop="openCancelDialog" class="cancel-button">{{ $t('businessAppointment.cancelAppointment')
+      }}</button>
+
     </div>
   </div>
 </template>
 
 <style scoped>
+.complete-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.3125rem;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 12rem;
+  text-align: center;
+  margin-left: 1rem;
+}
+
+.complete-button:hover {
+  background-color: #388e3c;
+}
+
 .user-card {
   width: 100%;
   padding: 20px;
@@ -155,5 +182,4 @@ export default {
 .cancel-button:hover {
   background-color: #ff1a1a;
 }
-
 </style>
