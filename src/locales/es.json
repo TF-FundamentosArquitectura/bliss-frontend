@@ -6,8 +6,8 @@
     "myServices": "Historial de 'Mis Servicios'",
     "login": "Iniciar Sesión",
     "register": "Registrarse",
-    "myServicesBussiness": "Mis Servicios"
-
+    "myServicesBussiness": "Mis Servicios",
+    "logout": "Cerrar Sesión"
   },
   "appointment": {
     "title": "Título",
@@ -40,7 +40,8 @@
     "upload": "Subir",
     "price": "Precio",
     "description": "Descripción",
-    "createService": "Crear Servicio"
+    "createService": "Crear Servicio",
+    "specialists": "Especialistas"
   },
   "createBusinessText": {
     "workAtTheSpeed": "Trabaja a la velocidad",
@@ -50,7 +51,8 @@
     "selectCategory": "Selecciona una categoría",
     "setPrice": "Establece un precio para tu servicio",
     "addDescription": "Añade una descripción para tu servicio.",
-    "upload": "Subir"
+    "upload": "Subir",
+    "enterSpecialistName": "Ingresa el nombre del especialista"
   },
   "priceFilter": {
     "filterByPrice": "Filtrar por precio",

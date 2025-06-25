@@ -1,7 +1,7 @@
-import {defineStore} from "pinia";
-import {AuthenticationService} from "./authentication.service.js";
-import {SignInResponse} from "../model/sign-in.response.js";
-import {SignUpResponse} from "../model/sign-up.response.js";
+import { defineStore } from "pinia";
+import { AuthenticationService } from "./authentication.service.js";
+import { SignInResponse } from "../model/sign-in.response.js";
+import { SignUpResponse } from "../model/sign-up.response.js";
 /**
  * Authentication services instance
  * @type {AuthenticationService}
@@ -18,7 +18,7 @@ const authenticationService = new AuthenticationService();
  */
 export const useAuthenticationStore = defineStore({
     id: 'authentication',
-    state: () => ({ signedIn: false, userId: 0, email: ''}),
+    state: () => ({ signedIn: false, userId: 0, email: '', role: '' }),
     getters: {
         /**
          * Returns the signed in state
@@ -38,7 +38,9 @@ export const useAuthenticationStore = defineStore({
          * Returns the current token
          * @returns {string} current token
          */
-        currentToken: () => localStorage.getItem('token')
+        currentToken: () => localStorage.getItem('token'),
+        currentRole: (state) => state['role']
+
     },
     actions: {
         /**
@@ -54,10 +56,11 @@ export const useAuthenticationStore = defineStore({
         async signIn(signInRequest, router) {
             authenticationService.signIn(signInRequest)
                 .then(response => {
-                    let signInResponse = new SignInResponse(response.data.id, response.data.email, response.data.token);
+                    let signInResponse = new SignInResponse(response.data.id, response.data.email, response.data.token, response.data.role);
                     this.signedIn = true;
                     this.userId = signInResponse.id;
                     this.email = signInResponse.email;
+                    this.role = signInResponse.role;
                     localStorage.setItem('token', signInResponse.token);
                     console.log(signInResponse);
                     router.push({ name: 'ClientHome' });

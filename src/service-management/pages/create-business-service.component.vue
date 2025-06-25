@@ -1,17 +1,21 @@
 <script>
-import {defaultBusinessId, defaultClientId} from "../../router/index.js";
-import {ServiceApiService} from "../services/service-api.service.js";
-import {CategoryApiService} from "../services/category-api.service.js";
+import { defaultBusinessId, defaultClientId } from "../../router/index.js";
+import { ServiceApiService } from "../services/service-api.service.js";
+import { CategoryApiService } from "../services/category-api.service.js";
 
 export default {
   name: "create-business-service",
-  data(){
+  data() {
     return {
       serviceName: null,
       price: null,
       description: null,
       selectedCategory: null,
-      categories: []
+      categories: [],
+      specialists: [
+        { name: '' }
+      ]
+
     }
   },
   methods: {
@@ -19,6 +23,13 @@ export default {
       min = Math.ceil(min);
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min + 1)) + min;
+
+    },
+    addSpecialistField() {
+      this.specialists.push({ name: '' });
+    },
+    removeSpecialistField(index) {
+      this.specialists.splice(index, 1);
     },
     upload() {
       this.$refs.fileupload.upload();
@@ -28,13 +39,15 @@ export default {
     },
     async createService() {
       const serviceData = {
+
         companyId: defaultBusinessId,
         categoryId: this.selectedCategory ? parseInt(this.selectedCategory.name) : null,
         name: this.serviceName,
         description: this.description,
         price: this.price,
         duration: this.getRandomInt(40, 120),
-        imageUrl: "https://res.cloudinary.com/dbdoazcrx/image/upload/v1727333993/ulxogsmo1ynfnaxxmxiv.webp"
+        imageUrl: "https://res.cloudinary.com/dbdoazcrx/image/upload/v1727333993/ulxogsmo1ynfnaxxmxiv.webp",
+        specialist: this.specialists.map(s => s.name).filter(n => n.trim() !== '')
       };
       try {
         const serviceApiService = new ServiceApiService();
@@ -46,7 +59,7 @@ export default {
           detail: 'Your services has been created successfully.',
           life: 3000
         });
-        this.$router.push({name: 'BusinessMyServices' , params: {id: defaultClientId}});
+        this.$router.push({ name: 'BusinessMyServices', params: { id: defaultClientId } });
       } catch (error) {
         this.$toast.add({
           severity: 'error',
@@ -58,13 +71,13 @@ export default {
     },
     async fetchCategories() {
       const categoriesApiService = new CategoryApiService();
-      try{
+      try {
         let response = await categoriesApiService.getCategories();
         this.categories = response.data.map(category => ({
           cname: category.name,
           name: category.id
         }));
-      }catch (error){
+      } catch (error) {
         console.error('Error fetching categories:', error);
       }
     },
@@ -81,7 +94,7 @@ export default {
       <div class="col-4">
         <div class="grid" style="width: fit-content;">
           <div class="col-12" style="width: fit-content;">
-            <pv-card class="w-auto p-5 custom-card-1"  style="max-width: 400px">
+            <pv-card class="w-auto p-5 custom-card-1" style="max-width: 400px">
               <template #header>
                 <div>
                   <i class="pi pi-credit-card" style="font-size: 5rem" />
@@ -92,12 +105,8 @@ export default {
                 <p>{{ $t('createBusinessText.gradualAccumulation') }}</p>
               </template>
               <template #footer>
-                <pv-button icon="pi pi-angle-right"
-                           icon-pos="right"
-                           :label="$t('createBusinessText.learnMore')"
-                           severity="secondary"
-                           class="bg-white-alpha-10"
-                           style="color: #37123C" />
+                <pv-button icon="pi pi-angle-right" icon-pos="right" :label="$t('createBusinessText.learnMore')"
+                  severity="secondary" class="bg-white-alpha-10" style="color: #37123C" />
               </template>
             </pv-card>
           </div>
@@ -113,12 +122,8 @@ export default {
                 <p>{{ $t('createBusinessText.gradualAccumulation') }}</p>
               </template>
               <template #footer>
-                <pv-button icon="pi pi-angle-right"
-                           icon-pos="right"
-                           :label="$t('createBusinessText.learnMore')"
-                           severity="secondary"
-                           class="bg-white-alpha-10"
-                           style="color: #37123C" />
+                <pv-button icon="pi pi-angle-right" icon-pos="right" :label="$t('createBusinessText.learnMore')"
+                  severity="secondary" class="bg-white-alpha-10" style="color: #37123C" />
               </template>
             </pv-card>
           </div>
@@ -134,33 +139,51 @@ export default {
           <template #content>
             <div style="text-align: left">
               <h2 style="font-weight: normal;">{{ $t('createBusinessService.serviceName') }}</h2>
-              <pv-input-text type="text" v-model="serviceName" :placeholder="$t('createBusinessText.nameYourService')" style="width: 100%" class="custom-text-input" />
+              <pv-input-text type="text" v-model="serviceName" :placeholder="$t('createBusinessText.nameYourService')"
+                style="width: 100%" class="custom-text-input" />
             </div>
             <div style="text-align: left">
               <h2 style="font-weight: normal;">{{ $t('createBusinessService.categories') }}</h2>
-              <pv-cascade-select v-model="selectedCategory" :options="categories" optionLabel="cname" optionGroupLabel="name"
-                                 optionGroupChildren="children" :placeholder="$t('createBusinessText.selectCategory')" style="width: 100%" class="custom-cascade-select" />
+              <pv-cascade-select v-model="selectedCategory" :options="categories" optionLabel="cname"
+                optionGroupLabel="name" optionGroupChildren="children"
+                :placeholder="$t('createBusinessText.selectCategory')" style="width: 100%"
+                class="custom-cascade-select" />
+            </div>
+            <div style="text-align: left; margin-top: 20px">
+              <h2 style="font-weight: normal;">{{ $t('createBusinessService.specialists') }}</h2>
+              <div v-for="(specialist, index) in specialists" :key="index" class="flex items-center gap-3 mb-2">
+                <pv-input-text v-model="specialist.name" :placeholder="$t('createBusinessText.enterSpecialistName')"
+                  style="flex: 1;" class="custom-text-input" />
+                <pv-button v-if="specialists.length > 1" icon="pi pi-times" @click="removeSpecialistField(index)"
+                  severity="danger" rounded outlined />
+              </div>
+              <pv-button icon="pi pi-plus" @click="addSpecialistField" severity="secondary" rounded outlined
+                class="mt-2" />
             </div>
             <div style="text-align: left">
               <h2 style="font-weight: normal;">{{ $t('createBusinessService.upload') }}</h2>
               <div class="card flex flex-col gap-6 items-center justify-center">
                 <pv-toast />
-                <pv-file-upload ref="fileupload" mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" @upload="onUpload" />
+                <pv-file-upload ref="fileupload" mode="basic" name="demo[]" url="/api/upload" accept="image/*"
+                  :maxFileSize="1000000" @upload="onUpload" />
                 <pv-button :label="$t('createBusinessText.upload')" @click="upload" severity="secondary" />
               </div>
             </div>
             <div style="text-align: left">
               <h2 style="font-weight: normal;">{{ $t('createBusinessService.price') }}</h2>
-              <pv-input-number v-model="price" inputId="currency-us" :min="0" mode="currency" currency="USD" locale="en-US" fluid
-                               :placeholder="$t('createBusinessText.setPrice')" />
+              <pv-input-number v-model="price" inputId="currency-us" :min="0" mode="currency" currency="USD"
+                locale="en-US" fluid :placeholder="$t('createBusinessText.setPrice')" />
             </div>
             <div style="text-align: left">
               <h2 style="font-weight: normal;">{{ $t('createBusinessService.description') }}</h2>
-              <pv-textarea v-model="description" rows="10" cols="75" style="background-color: white; color: black; width: 100%" :placeholder="$t('createBusinessText.addDescription')" />
+              <pv-textarea v-model="description" rows="10" cols="75"
+                style="background-color: white; color: black; width: 100%"
+                :placeholder="$t('createBusinessText.addDescription')" />
             </div>
           </template>
           <template #footer>
-            <pv-button :label="$t('createBusinessService.createService')" class="mt-5" style="background-color: #37123C; color: white" @click="createService" />
+            <pv-button :label="$t('createBusinessService.createService')" class="mt-5"
+              style="background-color: #37123C; color: white" @click="createService" />
           </template>
         </pv-card>
       </div>
@@ -169,7 +192,7 @@ export default {
 </template>
 
 <style scoped>
-.title{
+.title {
   font-family: 'Tajawal', sans-serif;
   font-weight: normal;
   font-size: 3rem;
@@ -202,5 +225,4 @@ export default {
 .custom-cascade-select {
   background-color: #ffffff;
 }
-
 </style>

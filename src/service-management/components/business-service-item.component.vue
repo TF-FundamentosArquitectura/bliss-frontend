@@ -12,10 +12,10 @@ export default {
   },
   methods: {
     redirectToServiceEdit(serviceId) {
-      this.$router.push({name: 'ServiceEdit', params: {serviceId: serviceId}});
+      this.$router.push({ name: 'ServiceEdit', params: { serviceId: serviceId } });
     },
     async deleteService(serviceId) {
-      try{
+      try {
         const serviceApiService = new ServiceApiService();
         await serviceApiService.deleteService(serviceId);
         this.$toast.add({
@@ -45,24 +45,26 @@ export default {
         {{ service.name }}
       </div>
     </template>
+
     <template #content>
+      <div>
+        <h3>{{ $t('createBusinessService.specialists') }} </h3>
+        <ul class="list-inside">
+          <li v-for="(specialist, index) in service.specialist" :key="index" class="flex items-center gap-2">
+            • {{ specialist }}
+          </li>
+        </ul>
+      </div>
       <div class="content-text">
         {{ service.description }}
       </div>
     </template>
     <template #footer>
       <div class="flex gap-4 mt-1">
-        <pv-button icon="pi pi-pencil"
-                   icon-pos="right"
-                   :label="$t('businessService.edit')"
-                   class="w-full"
-                   @click="this.redirectToServiceEdit(service.id)" />
-        <pv-button icon="pi pi-delete-left"
-                   icon-pos="right"
-                   :label="$t('businessService.delete')"
-                   class="w-full"
-                   severity="danger"
-                   @click="this.deleteService(service.id)"/>
+        <pv-button icon="pi pi-pencil" icon-pos="right" :label="$t('businessService.edit')" class="w-full"
+          @click="this.redirectToServiceEdit(service.id)" />
+        <pv-button icon="pi pi-delete-left" icon-pos="right" :label="$t('businessService.delete')" class="w-full"
+          severity="danger" @click="this.deleteService(service.id)" />
       </div>
     </template>
   </pv-card>
@@ -77,9 +79,11 @@ export default {
   border-color: black;
   border-width: 1px;
 }
+
 .content-text {
   color: #37123C;
 }
+
 .service-image {
   width: 100%;
   height: 200px;

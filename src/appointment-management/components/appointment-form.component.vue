@@ -1,6 +1,6 @@
 <script>
-import {Service} from "../../shared/model/service.entity.js";
-import {defaultClientId} from "../../router/index.js";
+import { Service } from "../../shared/model/service.entity.js";
+import { defaultClientId } from "../../router/index.js";
 
 export default {
   name: "appointment-form",
@@ -12,40 +12,34 @@ export default {
     return {
       date: new Date(),
       time: new Date(),
-      requirements: ""
+      requirements: null,
+      selectedSpecialist: null,
     }
   },
-  methods:{
-    buildAppointmentFromFormData(){
-      const bookingDate = new Date(
-          this.date.getFullYear(),
-          this.date.getMonth(),
-          this.date.getDate(),
-          this.time.getHours(),
-          this.time.getMinutes(),
-          0, 0
-      );
-      // Formatear la hora como string (HH:mm)
-      const pad = n => n.toString().padStart(2, '0');
-      const timeString = `${pad(this.time.getHours())}:${pad(this.time.getMinutes())}`;
-
+  methods: {
+    buildAppointmentFromFormData() {
+      let nowDate = new Date();
+      nowDate = nowDate.toISOString();
+      let bookingDate = this.date.toISOString();
+      let bookingTime = `${this.time.getHours().toString().padStart(2, '0')}:${this.time.getMinutes().toString().padStart(2, '0')}`;
       return {
         userId: defaultClientId,
         serviceId: this.service.id,
         companyId: this.service.company.id,
-        reservationDate: bookingDate.toISOString(),
-        date: bookingDate.toISOString(),
-        time: timeString,
-        requirements: this.requirements ? this.requirements : "",
-        status: "PENDING"
+        reservationDate: nowDate,
+        status: "PENDING",
+        date: bookingDate,
+        time: bookingTime,
+        requirements: this.requirements,
+        specialist: this.selectedSpecialist
       };
     },
-    emitBookingEvent(){
+    emitBookingEvent() {
       let appointmentData = this.buildAppointmentFromFormData();
       console.log("Appointment to send:", appointmentData); // <-- Agregado para depuración
       this.$emit('booking-event', appointmentData);
     },
-    confirmBooking(){
+    confirmBooking() {
       this.$confirm.require({
         message: 'Are you sure u want to book ' + this.service.name + ' services ?',
         header: 'Confirmation',
@@ -68,7 +62,7 @@ export default {
 </script>
 
 <template>
-  <pv-confirm-dialog/>
+  <pv-confirm-dialog />
   <pv-card>
     <template #title>
       Make An Appointment
@@ -76,31 +70,38 @@ export default {
     <template #content>
       <div>
         <label class="font-bold block mb-2"> Any requirements? </label>
-        <pv-textarea v-model="requirements"  rows="6" cols="30" class="w-full"/>
+        <pv-textarea v-model="requirements" rows="6" cols="30" class="w-full" />
+      </div>
+      <div v-if="service && service.specialist?.length" class="mb-4">
+        <label for="specialist" class="block mb-2 font-semibold">Choose a Specialist:</label>
+        <select id="specialist" v-model="selectedSpecialist" class="p-2 border rounded w-full">
+          <option disabled value="">-- Please select --</option>
+          <option v-for="(spec, index) in service.specialist" :key="index" :value="spec">
+            {{ spec }}
+          </option>
+        </select>
       </div>
       <div class="mt-5">
         <div class="flex-auto">
           <label class="font-bold block mb-2"> Select Date </label>
-          <pv-datepicker v-model="date" readonly/>
+          <pv-datepicker v-model="date" readonly />
           <div class="card flex justify-center">
-            <pv-datepicker v-model="date" inline showWeek class="w-full sm:w-[30rem]"/>
+            <pv-datepicker v-model="date" inline showWeek class="w-full sm:w-[30rem]" />
           </div>
         </div>
         <div class="flex-auto">
           <label class="font-bold block mb-2"> Select Time </label>
-          <pv-datepicker v-model="time" timeOnly readonly/>
+          <pv-datepicker v-model="time" timeOnly readonly />
           <div class="card flex justify-center">
-            <pv-datepicker  v-model="time" inline timeOnly fluid class="w-full sm:w-[30rem]" />
+            <pv-datepicker v-model="time" inline timeOnly fluid class="w-full sm:w-[30rem]" />
           </div>
         </div>
       </div>
     </template>
     <template #footer>
-      <pv-button label="Book Now" icon="pi pi-check" icon-pos="right" @click="confirmBooking()"/>
+      <pv-button label="Book Now" icon="pi pi-check" icon-pos="right" @click="confirmBooking()" />
     </template>
   </pv-card>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

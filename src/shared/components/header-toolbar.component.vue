@@ -1,18 +1,26 @@
 <script>
 import LanguageSwitcher from "./language-switcher.component.vue";
 import { defaultBusinessId } from '../../router/index.js';
+import { useAuthenticationStore } from '../../iam/services/authentication.store.js';
 export default {
   components: { LanguageSwitcher },
   data() {
     return {
       drawer: false,
-      userType: 'client', // Default user type
-      userId: 1 // Temporary user id for testing the component
     };
   },
   computed: {
+    authStore() {
+      return useAuthenticationStore();
+    },
+    userType() {
+      return this.authStore.currentRole;
+    },
+    userId() {
+      return this.authStore.currentUserId;
+    },
     items() {
-      if (this.userType === 'client') {
+      if (this.userType === 'Client') {
         return [
           { label: this.$t('toolbar.home'), to: '/home' },
           { label: this.$t('toolbar.services'), to: '/client-services' },
@@ -22,9 +30,9 @@ export default {
       } else {
         return [
           { label: this.$t('toolbar.home'), to: '/homeBusiness' },
-            // { label: this.$t('toolbar.myServices'), to: `/business-myservices/${this.userId}` },
+          // { label: this.$t('toolbar.myServices'), to: `/business-myservices/${this.userId}` },
           { label: this.$t('toolbar.myServicesBussiness'), to: `/business-my-services/${defaultBusinessId}` },
-            // { label: this.$t('toolbar.schedule'), to: `/business-schedule/${this.userId}` }
+          // { label: this.$t('toolbar.schedule'), to: `/business-schedule/${this.userId}` }
           { label: this.$t('toolbar.schedule'), to: `/business-schedule/${this.userId}` }
         ];
       }
@@ -36,6 +44,10 @@ export default {
     },
     changeUserType(type) {
       this.userType = type;
+    },
+    handleLogout() {
+      localStorage.removeItem('token');
+      this.$router.push({ name: 'sign-in' });
     }
   }
 };
@@ -66,14 +78,10 @@ export default {
         <pv-button class="custom-button" icon="pi pi-search" text style="color: #37123c" />
         <pv-button class="custom-button" icon="pi pi-shopping-cart" text style="color: #37123c" />
         <pv-button class="custom-button" icon="pi pi-heart" text style="color: #37123c" />
-        <pv-button class="custom-button" icon="pi pi-user" :label="$t('toolbar.login') + ' / ' + $t('toolbar.register')" text plain style="color: #37123c" />
         <div class="flex items-center gap-3 m-2">
           <language-switcher />
-          <i class="pi pi-cog" style="font-size: 2rem"></i>
-          <select v-model="userType" @change="changeUserType(userType)">
-            <option value="client">Client</option>
-            <option value="business">Business</option>
-          </select>
+          <button @click="handleLogout" style="background-color: #37123c; color:#D1E4FA;">{{ $t('toolbar.logout')
+          }}</button>
         </div>
       </template>
     </pv-toolbar>

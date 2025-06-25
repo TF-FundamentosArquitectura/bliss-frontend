@@ -6,7 +6,8 @@
     "myServices": "'My Services' History",
     "login": "Login",
     "register": "Register",
-    "myServicesBussiness": "My Services"
+    "myServicesBussiness": "My Services",
+    "logout": "Logout"
   },
   "appointment": {
     "title": "Title",
@@ -39,7 +40,8 @@
     "upload": "Upload",
     "price": "Price",
     "description": "Description",
-    "createService": "Create Service"
+    "createService": "Create Service",
+    "specialists": "Specialists"
   },
   "createBusinessText": {
     "workAtTheSpeed": "Work at the speed",
@@ -49,7 +51,8 @@
     "selectCategory": "Select a category",
     "setPrice": "Set a price for your service",
     "addDescription": "Add a description for your service.",
-    "upload": "Upload"
+    "upload": "Upload",
+    "enterSpecialistName": "Enter the specialist's name"
   },
   "priceFilter": {
     "filterByPrice": "Filter By Price",
@@ -147,5 +150,4 @@
     "noGoBack": "No, Go Back",
     "close": "Close"
   }
-
 }

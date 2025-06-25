@@ -15,7 +15,8 @@ export class SignUpRequest {
         dni,
         address,
         city,
-        birthDate
+        birthDate,
+        role
     ) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -26,5 +27,6 @@ export class SignUpRequest {
         this.address = address;
         this.city = city;
         this.birthDate = birthDate;
+        this.role = role;
     }
 }

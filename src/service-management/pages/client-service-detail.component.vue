@@ -1,7 +1,7 @@
 <script>
-import {ServiceApiService} from "../services/service-api.service.js";
-import {Service} from "../../shared/model/service.entity.js";
-import {$t} from "@primeuix/styled";
+import { ServiceApiService } from "../services/service-api.service.js";
+import { Service } from "../../shared/model/service.entity.js";
+import { $t } from "@primeuix/styled";
 
 export default {
   name: "client-service-detail",
@@ -16,33 +16,36 @@ export default {
     $t,
     buildServiceFromResponseData(service) {
       return new Service(
-          service.id,
-          service.category, // No usar category_id
-          service.company,  // No usar company_id
-          service.name,
-          service.description,
-          service.price,
-          service.duration,
-          service.rating,
-          service.sales,
-          service.imgUrl // No usar imgUrl como variable local, solo propiedad del objeto
+        service.id,
+        service.category,
+        service.company,
+        service.name,
+        service.description,
+        service.price,
+        service.duration,
+        service.rating,
+        service.sales,
+        service.imgUrl,
+        service.specialist
+
+
       )
     },
     getServiceId() {
       return this.$route.params.id;
     },
-    async getServiceById(id){
+    async getServiceById(id) {
       const response = await this.serviceApiService.getServiceById(id);
       this.currentService = this.buildServiceFromResponseData(response.data);
     },
-    getCurrentService(){
+    getCurrentService() {
       let serviceId = this.getServiceId();
       if (serviceId) {
         this.getServiceById(serviceId);
       }
     },
-    redirectToReservations(serviceId){
-      this.$router.push({name: 'Reservations', params: {id: serviceId}});
+    redirectToReservations(serviceId) {
+      this.$router.push({ name: 'Reservations', params: { id: serviceId } });
     }
   },
   created() {
@@ -54,34 +57,43 @@ export default {
 <template>
   <div style="background-color: #ffffff;" class="flex flex-row m-3 mx-8 border-round-3xl">
     <div class="flex align-items-center justify-content-center m-8 fadein animation-duration-1000">
-      <img :src="currentService.imgUrl" alt="Service Image" class="service-image"/>
+      <img :src="currentService.imgUrl" alt="Service Image" class="service-image" />
     </div>
     <div class="flex align-items-start justify-content-center m-8 text-left max-w-30rem">
       <div>
         <div>
-          <span class="text-7xl font-bold">{{currentService.name}}</span>
+          <span class="text-7xl font-bold">{{ currentService.name }}</span>
+        </div>
+        <div>
+          <h3>{{ $t('createBusinessService.specialists') }} </h3>
+          <ul class="list-inside">
+            <li v-for="(specialist, index) in currentService.specialist" :key="index" class="flex items-center gap-2">
+              • {{ specialist }}
+            </li>
+          </ul>
         </div>
         <div class="flex justify-content-between  ">
           <div>
-            <span class="text-4xl font-bold"> PEN {{currentService.price}}</span>
+            <span class="text-4xl font-bold"> PEN {{ currentService.price }}</span>
           </div>
-          <div class="flex align-items-center justify-content-center gap-2" >
-            <span class="text-xl"> {{currentService.rating}}</span>
-            <i class="pi pi-star-fill"/>
+
+          <div class="flex align-items-center justify-content-center gap-2">
+            <span class="text-xl"> {{ currentService.rating }}</span>
+            <i class="pi pi-star-fill" />
           </div>
         </div>
         <div class="m-1">
-          <pv-button :label=" $t('clientServiceDetail.bookNow') " class="w-full"
-           @click="redirectToReservations(currentService.id)"/>
+          <pv-button :label="$t('clientServiceDetail.bookNow')" class="w-full"
+            @click="redirectToReservations(currentService.id)" />
         </div>
         <div>
-          <pv-divider type="solid"/>
+          <pv-divider type="solid" />
         </div>
         <div>
-          <span> Duration: {{currentService.duration}} mins </span>
+          <span> Duration: {{ currentService.duration }} mins </span>
         </div>
-        <div >
-          <span> {{currentService.description}} </span>
+        <div>
+          <span> {{ currentService.description }} </span>
         </div>
 
       </div>
@@ -90,7 +102,7 @@ export default {
 </template>
 
 <style scoped>
-.service-image{
+.service-image {
   max-width: 700px;
   max-height: 500px;
 }

@@ -1,16 +1,16 @@
 <script>
-import {ServiceApiService} from "../../service-management/services/service-api.service.js";
-import {Service} from "../../shared/model/service.entity.js";
-import {Appointment} from "../model/appointment.entity.js";
-import {ClientAppointmentApiService} from "../services/client-appointment-api.service.js";
+import { ServiceApiService } from "../../service-management/services/service-api.service.js";
+import { Service } from "../../shared/model/service.entity.js";
+import { Appointment } from "../model/appointment.entity.js";
+import { ClientAppointmentApiService } from "../services/client-appointment-api.service.js";
 import ServiceMiniCard from "../components/service-mini-card.component.vue";
 import AppointmentForm from "../components/appointment-form.component.vue";
-import {defaultClientId} from "../../router/index.js";
+import { defaultClientId } from "../../router/index.js";
 
 export default {
   name: "reservations",
-  components: {AppointmentForm, ServiceMiniCard},
-  data(){
+  components: { AppointmentForm, ServiceMiniCard },
+  data() {
     return {
       serviceId: this.$route.params.id,
       bookingService: Service,
@@ -19,25 +19,27 @@ export default {
       clientAppointmentApiService: new ClientAppointmentApiService(),
       date: new Date(),
       time: new Date(),
-      requirements: null
+      requirements: null,
+
     }
   },
   methods: {
     buildServiceFromResponseData(service) {
       return new Service(
-          service.id,
-          service.company,
-          service.categories,
-          service.name,
-          service.description,
-          service.price,
-          service.duration,
-          service.rating,
-          service.sales,
-          service.imgUrl
+        service.id,
+        service.company,
+        service.categories,
+        service.name,
+        service.description,
+        service.price,
+        service.duration,
+        service.rating,
+        service.sales,
+        service.imgUrl,
+        service.specialist
       )
     },
-    async getBookingService(){
+    async getBookingService() {
       let response = await this.serviceApiService.getServiceById(this.serviceId);
       this.bookingService = this.buildServiceFromResponseData(response.data);
     },
@@ -47,21 +49,21 @@ export default {
         if (response.status === 201) {
           this.afterBookingDialog();
         } else {
-          this.$toast.add({severity:'error', summary:'Error', detail:'No se pudo crear la cita.', life: 3000});
+          this.$toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo crear la cita.', life: 3000 });
         }
       } catch (error) {
         let msg = "No se pudo crear la cita.";
         if (error.response && error.response.data && error.response.data.message) {
           msg = error.response.data.message;
         }
-        this.$toast.add({severity:'error', summary:'Error', detail: msg, life: 4000});
+        this.$toast.add({ severity: 'error', summary: 'Error', detail: msg, life: 4000 });
       }
     },
-    redirectToServices(){
-      this.$router.push({name: 'ClientServices'});
+    redirectToServices() {
+      this.$router.push({ name: 'ClientServices' });
     },
-    redirectToSchedules(){
-      this.$router.push({name: 'ClientSchedule' , params: {userId: defaultClientId}});
+    redirectToSchedules() {
+      this.$router.push({ name: 'ClientSchedule', params: { userId: defaultClientId } });
     },
     afterBookingDialog() {
       this.$confirm.require({
@@ -84,7 +86,7 @@ export default {
       });
     }
   },
-  created(){
+  created() {
     this.getBookingService();
   }
 
@@ -95,17 +97,17 @@ export default {
   <div class="flex gap-5 align-items-start">
     <div class="flex-1 flex align-items-center justify-content-center">
       <div>
-        <service-mini-card :service="bookingService"/>
+        <service-mini-card :service="bookingService" />
       </div>
     </div>
     <div class="flex-none flex align-items-center justify-content-center">
-      <appointment-form :service="bookingService"
-                        @booking-event="handleBookingEvent"/>
+      <appointment-form :service="bookingService" @booking-event="handleBookingEvent" />
+      <appointment-form :service="bookingService" @booking-event="handleBookingEvent" />
     </div>
     <div class="flex-1 flex align-items-start justify-content-center">
       <div>
         <pv-card style="max-width: 300px">
-          <i class="pi pi-credit-card"/>
+          <i class="pi pi-credit-card" />
           <template #title>
             Not what you needed?
           </template>
@@ -113,16 +115,16 @@ export default {
             check services again!
           </template>
           <template #footer>
-            <pv-button label="Go Back" icon="pi pi-chevron-right" icon-pos="left"
-                       severity="danger" @click="redirectToServices()" />
+            <pv-button label="Go Back" icon="pi pi-chevron-right" icon-pos="left" severity="danger"
+              @click="redirectToServices()" />
+            <pv-button label="Go Back" icon="pi pi-chevron-right" icon-pos="left" severity="danger"
+              @click="redirectToServices()" />
           </template>
-        </pv-card >
+        </pv-card>
       </div>
     </div>
   </div>
 
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

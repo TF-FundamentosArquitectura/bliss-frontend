@@ -42,7 +42,7 @@ import Divider from "primevue/divider";
 import DatePicker from "primevue/datepicker";
 
 const app = createApp(App);
-import {createPinia} from "pinia";
+import { createPinia } from "pinia";
 
 
 app.use(PrimeVue, {
@@ -87,7 +87,7 @@ app.component('pv-button', Button)
     .component('pv-avatar', Avatar)
     .component('pv-slider', Slider)
     .component('pv-divider', Divider)
-    .component('pv-datepicker', DatePicker )
+    .component('pv-datepicker', DatePicker)
     .component('pv-select-button', SelectButton)
     .component('pv-cascade-select', CascadeSelect);
 

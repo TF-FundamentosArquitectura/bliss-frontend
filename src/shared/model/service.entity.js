@@ -10,6 +10,7 @@ export class Service {
         rating = 0,
         sales = 0,
         imgUrl = '',
+        specialist = []
     ) {
         this.id = id;
         this.company = company;
@@ -21,5 +22,6 @@ export class Service {
         this.rating = rating;
         this.sales = sales;
         this.imgUrl = imgUrl;
+        this.specialist = specialist;
     }
 }
