@@ -1,7 +1,6 @@
 <script>
 import { ServiceApiService } from "../services/service-api.service.js";
 import { Service } from "../../shared/model/service.entity.js";
-import { $t } from "@primeuix/styled";
 
 export default {
   name: "client-service-detail",
@@ -13,7 +12,6 @@ export default {
     };
   },
   methods: {
-    $t,
     buildServiceFromResponseData(service) {
       return new Service(
         service.id,
@@ -27,9 +25,7 @@ export default {
         service.sales,
         service.imgUrl,
         service.specialist
-
-
-      )
+      );
     },
     getServiceId() {
       return this.$route.params.id;
@@ -39,7 +35,7 @@ export default {
       this.currentService = this.buildServiceFromResponseData(response.data);
     },
     getCurrentService() {
-      let serviceId = this.getServiceId();
+      const serviceId = this.getServiceId();
       if (serviceId) {
         this.getServiceById(serviceId);
       }
@@ -53,6 +49,7 @@ export default {
   }
 };
 </script>
+
 
 <template>
   <div style="background-color: #ffffff;" class="flex flex-row m-3 mx-8 border-round-3xl">

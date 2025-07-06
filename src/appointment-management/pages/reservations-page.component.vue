@@ -19,8 +19,7 @@ export default {
       clientAppointmentApiService: new ClientAppointmentApiService(),
       date: new Date(),
       time: new Date(),
-      requirements: null,
-
+      requirements: null
     }
   },
   methods: {
@@ -49,14 +48,24 @@ export default {
         if (response.status === 201) {
           this.afterBookingDialog();
         } else {
-          this.$toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo crear la cita.', life: 3000 });
+          this.$toast.add({
+            severity: 'error',
+            summary: this.$t('appointment.error'),
+            detail: this.$t('appointment.creationFailed'),
+            life: 3000
+          });
         }
       } catch (error) {
-        let msg = "No se pudo crear la cita.";
+        let msg = this.$t('appointment.creationFailed');
         if (error.response && error.response.data && error.response.data.message) {
           msg = error.response.data.message;
         }
-        this.$toast.add({ severity: 'error', summary: 'Error', detail: msg, life: 4000 });
+        this.$toast.add({
+          severity: 'error',
+          summary: this.$t('appointment.error'),
+          detail: msg,
+          life: 4000
+        });
       }
     },
     redirectToServices() {
@@ -67,21 +76,21 @@ export default {
     },
     afterBookingDialog() {
       this.$confirm.require({
-        message: 'Where u headed now?',
-        header: 'Service Booked :DD!!',
+        message: this.$t('appointment.confirmationMessage'),
+        header: this.$t('appointment.confirmationHeader'),
         modal: true,
         rejectProps: {
-          label: 'Go to Services',
+          label: this.$t('appointment.goToServices'),
           outlined: true
         },
         acceptProps: {
-          label: 'Go to Sechedule'
+          label: this.$t('appointment.goToSchedule')
         },
         accept: () => {
           this.redirectToSchedules();
         },
         reject: () => {
-          this.redirectToServices()
+          this.redirectToServices();
         }
       });
     }
@@ -89,7 +98,6 @@ export default {
   created() {
     this.getBookingService();
   }
-
 }
 </script>
 
@@ -102,29 +110,25 @@ export default {
     </div>
     <div class="flex-none flex align-items-center justify-content-center">
       <appointment-form :service="bookingService" @booking-event="handleBookingEvent" />
-      <appointment-form :service="bookingService" @booking-event="handleBookingEvent" />
     </div>
     <div class="flex-1 flex align-items-start justify-content-center">
       <div>
         <pv-card style="max-width: 300px">
           <i class="pi pi-credit-card" />
           <template #title>
-            Not what you needed?
+            {{ $t('appointment.notWhatYouNeeded') }}
           </template>
           <template #subtitle>
-            check services again!
+            {{ $t('appointment.checkServicesAgain') }}
           </template>
           <template #footer>
-            <pv-button label="Go Back" icon="pi pi-chevron-right" icon-pos="left" severity="danger"
-              @click="redirectToServices()" />
-            <pv-button label="Go Back" icon="pi pi-chevron-right" icon-pos="left" severity="danger"
+            <pv-button :label="$t('appointment.goBack')" icon="pi pi-chevron-right" icon-pos="left" severity="danger"
               @click="redirectToServices()" />
           </template>
         </pv-card>
       </div>
     </div>
   </div>
-
 </template>
 
 <style scoped></style>
