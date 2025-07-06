@@ -156,7 +156,8 @@
     "address": "Address",
     "minutes": "mins",
     "cancelAppointment": "Cancel Appointment",
-    "completeAppointment": "Complete Appointment"
+    "completeAppointment": "Complete Appointment",
+    "services": "Services"
   },
   "businessAppointmentList": {
     "noUsersAvailable": "No users available",
