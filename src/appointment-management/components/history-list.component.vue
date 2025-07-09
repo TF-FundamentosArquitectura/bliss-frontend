@@ -25,7 +25,7 @@ export default {
         const appointments = await this.appointmentApiService.getAppointmentsByUserId(this.userId);
         const filteredAppointments = appointments.filter(
             appointment => {
-              return appointment.status === "COMPLETED"
+              return appointment.status === "Completed"
             }
         );
 
