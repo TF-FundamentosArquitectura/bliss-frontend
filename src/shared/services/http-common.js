@@ -9,5 +9,18 @@ const http = axios.create({
 http.defaults.headers.common["Content-Type"] = "application/json";
 http.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
+// Interceptor para agregar token
+http.interceptors.request.use(
+    (config) => {
+        const token = localStorage.token;
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 export default http;
