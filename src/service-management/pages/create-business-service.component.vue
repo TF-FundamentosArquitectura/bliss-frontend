@@ -14,8 +14,9 @@ export default {
       categories: [],
       specialists: [
         { name: '' }
-      ]
-
+      ],
+      imageUrl: "", // Nuevo campo para el URL de la imagen
+      duration: null, // Nuevo campo para duración
     }
   },
   methods: {
@@ -31,22 +32,15 @@ export default {
     removeSpecialistField(index) {
       this.specialists.splice(index, 1);
     },
-    upload() {
-      this.$refs.fileupload.upload();
-    },
-    onUpload() {
-      this.$toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
-    },
     async createService() {
       const serviceData = {
-
         companyId: defaultBusinessId,
         categoryId: this.selectedCategory ? parseInt(this.selectedCategory.name) : null,
         name: this.serviceName,
         description: this.description,
         price: this.price,
-        duration: this.getRandomInt(40, 120),
-        imageUrl: "https://res.cloudinary.com/dbdoazcrx/image/upload/v1727333993/ulxogsmo1ynfnaxxmxiv.webp",
+        duration: this.duration || this.getRandomInt(40, 120), // Usa duración ingresada o aleatoria
+        imageUrl: this.imageUrl || "https://res.cloudinary.com/dbdoazcrx/image/upload/v1727333993/ulxogsmo1ynfnaxxmxiv.webp",
         specialist: this.specialists.map(s => s.name).filter(n => n.trim() !== '')
       };
       try {
@@ -162,12 +156,20 @@ export default {
             </div>
             <div style="text-align: left">
               <h2 style="font-weight: normal;">{{ $t('createBusinessService.upload') }}</h2>
-              <div class="card flex flex-col gap-6 items-center justify-center">
-                <pv-toast />
-                <pv-file-upload ref="fileupload" mode="basic" name="demo[]" url="/api/upload" accept="image/*"
-                  :maxFileSize="1000000" @upload="onUpload" />
-                <pv-button :label="$t('createBusinessText.upload')" @click="upload" severity="secondary" />
+              <pv-input-text
+                v-model="imageUrl"
+                :placeholder="$t('createBusinessText.enterImageUrl')"
+                style="width: 100%"
+                class="custom-text-input"
+              />
+              <div v-if="imageUrl" style="margin-top: 10px;">
+                <img :src="imageUrl" alt="Vista previa" style="max-width: 100%; max-height: 200px; border-radius: 8px;" />
               </div>
+            </div>
+            <div style="text-align: left">
+              <h2 style="font-weight: normal;">Duración (minutos)</h2>
+              <pv-input-number v-model="duration" :min="1" :max="600" :step="1"
+                :placeholder="'Ingrese la duración en minutos'" style="width: 100%" />
             </div>
             <div style="text-align: left">
               <h2 style="font-weight: normal;">{{ $t('createBusinessService.price') }}</h2>
